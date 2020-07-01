@@ -123,8 +123,8 @@ class DummyWidget(QWidget):
 	def onEnd(self):
 		"""Does all the stuff when user is done with AerialWare
 		"""
-		self.makeLayer(self.aw.getPathByMeridiansLinesWithTurnsDeg(), "Meridians")
-		self.makeLayer(self.aw.getPathByHorizontalsLinesWithTurnsDeg(), "Horizontals")
+		self.makeLayer(self.aw.getPathByMeridiansLinesDeg(), "Meridians")
+		self.makeLayer(self.aw.getPathByHorizontalsLinesDeg(), "Horizontals")
 		self.aw.close()
 		self.aw.deleteLater()
 		self.deleteLater()
@@ -134,16 +134,19 @@ class DummyWidget(QWidget):
 		"""
 		height = self.aw.getFlightHeight()
 		
-		# Create first point and add it to the list
-		p = QgsPoint(lines[0].p1())
-		p.addMValue(height)
-		points = [p]
-		
-		# Add each second point (because first point of each line is equal to the first point of a previous line) to the list
+		# Add each point to the list
+		points = []
+		doReverse = False # Every second line will be reversed because we need to correctly draw turns
 		for line in lines:
-			p = QgsPoint(line.p2())
-			p.addMValue(height)
-			points.append(p)
+			p1, p2 = line.p1(), line.p2()
+			if doReverse:
+				p1, p2 = p2, p1
+			doReverse = not doReverse
+			
+			for point in [p1, p2]:
+				p = QgsPoint(point)
+				p.addMValue(height)
+				points.append(p)
 		
 		# Create a polyline feature from points
 		feature = QgsFeature()
