@@ -1,3 +1,7 @@
+# Deprecated
+
+Deprecated together with AerialWare since the whole thing was approved by an idiot.
+
 # AerialWareQGISIntegration
 This script integrates AerialWare into QGIS
 
